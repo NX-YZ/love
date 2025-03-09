@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <link rel="stylesheet" href="./input/inputA.css">
+    <link rel="stylesheet" href="./css/waves.css">
+    <link rel="stylesheet" href="./css/pop-up-window.css">
+    <title>丸子-师门</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #25252b;
+            position: relative; /* 添加相对定位，作为 canvas 的参考 */
+        }
+
+        .box {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background: repeating-conic-gradient(from var(--a), #ff2770 0%, #ff2770 5%, transparent 5%, transparent 40%, #ff2770 50%);
+            animation: animate 2s linear infinite;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @property --a {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
+        @keyframes animate {
+            0% {
+                --a: 0deg;
+            }
+
+            100% {
+                --a: 360deg;
+            }
+        }
+
+        .box::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-conic-gradient(from var(--a), #45f3ff 0%, #45f3ff 5%, transparent 5%, transparent 40%, #45f3ff 50%);
+            animation: animate 2s linear infinite;
+            animation-delay: -0.5s;
+            border-radius: 50%;
+        }
+
+        .box::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background-color: #2d2d39;
+            border-radius: 50%;
+            border: 1px solid #25252b;
+        }
+
+        .imghead {
+            width: 89%;
+            height: 89%;
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+        }
+
+        canvas {
+            position: fixed; /* 设置为固定定位，脱离文档流 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <img class="imghead" src="./picture/a.png" onclick="openDialog('#dialog-1-1', false);">
+    </div>
+    <div class="burger-dialog" id="dialog-1-1">
+        <div class="burger-dialog-title">设置个人信息</div>
+        <div class="burger-dialog-content">
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>常用网名</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>出生时间</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>出生地点</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>加入时间</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>师傅/老师</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>徒弟</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>自述</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>QQ号</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>微信号</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>其他账号</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>权限等级</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>设备</span>
+                <i></i>
+            </div>
+            <br>
+            <div class="inputBox">
+                <input type="text" required="required">
+                <span>性别</span>
+                <i></i>
+            </div>
+            <br>
+            <br>
+        </div>
+        <div class="burger-dialog-actions">
+            <button class="waves-block" onclick="closeDialog('#dialog-1-1');">取消</button>
+            <button class="waves-block" onclick="closeDialog('#dialog-1-1');">确定</button>
+        </div>
+    </div>
+    <script src="./javascript/pop-up-window.js"></script>
+    <canvas id="canvas"></canvas>
+    <script>
+        window.onload = function () {
+            // 粒子动画相关代码
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            // 粒子动画的配置参数
+            const particleAnimationOptions = {
+                particleAmount: 100, // 粒子个数
+                defaultSpeed: 1, // 粒子运动速度
+                variantSpeed: 1, // 粒子运动速度的变量
+                particleColor: "rgb(32,245,245)", // 粒子的颜色
+                lineColor: "rgb(32,245,245)", // 网格连线的颜色
+                defaultRadius: 2, // 粒子半径
+                variantRadius: 2, // 粒子半径的变量
+                minDistance: 200 // 粒子之间连线的最小距离
+            };
+
+            // 从颜色字符串中提取RGB值
+            const lineColorRGB = particleAnimationOptions.lineColor.match(/\d+/g);
+
+            let particles = [],
+                canvasWidth, canvasHeight;
+
+            let resizeTimeout;
+
+            // 初始化函数
+            function init() {
+                getCanvasSize();
+                for (let i = 0; i < particleAnimationOptions.particleAmount; i++) {
+                    particles.push(new Particle());
+                }
+                loop();
+            }
+
+            // 窗口大小改变时的处理函数
+            window.addEventListener("resize", function () {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function () {
+                    getCanvasSize();
+                }, 200);
+            }, false);
+
+            // 获取画布大小
+            function getCanvasSize() {
+                canvasWidth = canvas.width = window.innerWidth;
+                canvasHeight = canvas.height = window.innerHeight;
+            }
+
+            // 粒子类
+            function Particle() {
+                this.x = Math.random() * canvasWidth; // 粒子的x轴坐标
+                this.y = Math.random() * canvasHeight; // 粒子的y轴坐标
+                this.speed = particleAnimationOptions.defaultSpeed + particleAnimationOptions.variantSpeed * Math.random(); // 粒子的运动速度
+                this.directionAngle = Math.floor(Math.random() * 360); // 粒子运动的方向
+                this.color = particleAnimationOptions.particleColor; // 粒子的颜色
+                this.radius = particleAnimationOptions.defaultRadius + Math.random() * particleAnimationOptions.variantRadius; // 粒子的半径大小
+                this.vector = {
+                    x: this.speed * Math.cos(this.directionAngle), // 粒子在x轴的速度
+                    y: this.speed * Math.sin(this.directionAngle) // 粒子在y轴的速度
+                };
+
+                // 更新粒子状态的函数
+                this.update = function () {
+                    this.checkBorder();
+                    this.x += this.vector.x;
+                    this.y += this.vector.y;
+                };
+
+                // 检查粒子是否到达边界的函数
+                this.checkBorder = function () {
+                    if (this.x >= canvasWidth || this.x <= 0) {
+                        this.vector.x *= -1;
+                    }
+                    if (this.y >= canvasHeight || this.y <= 0) {
+                        this.vector.y *= -1;
+                    }
+                    if (this.x > canvasWidth) {
+                        this.x = canvasWidth;
+                    }
+                    if (this.y > canvasHeight) {
+                        this.y = canvasHeight;
+                    }
+                    if (this.x < 0) {
+                        this.x = 0;
+                    }
+                    if (this.y < 0) {
+                        this.y = 0;
+                    }
+                };
+
+                // 绘制粒子的函数
+                this.draw = function () {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                };
+            }
+
+            // 绘制粒子之间连线的函数
+            function drawParticleLines() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = 0; j < particles.length; j++) {
+                        const distance = getDistance(particles[i], particles[j]);
+                        const opacity = 1 - distance / particleAnimationOptions.minDistance;
+                        if (opacity > 0) {
+                            ctx.lineWidth = 0.5;
+                            ctx.strokeStyle = `rgba(${lineColorRGB[0]},${lineColorRGB[1]},${lineColorRGB[2]},${opacity})`;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.closePath();
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // 计算两个粒子之间距离的函数
+            function getDistance(particle1, particle2) {
+                return Math.sqrt(Math.pow(particle1.x - particle2.x, 2) + Math.pow(particle1.y - particle2.y, 2));
+            }
+
+            // 动画循环函数
+            function loop() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                drawParticleLines();
+                requestAnimationFrame(loop);
+            }
+
+            init();
+        };
+    </script>
+</body>
+
+</html>
